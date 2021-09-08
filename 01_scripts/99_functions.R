@@ -34,10 +34,9 @@ makeForecast <- function(dataHist,yearForecastStart,length,growthSlope,supplySlo
 
 #busAForecast<-makeForecast(busA,"2021",lengthOut,50,30)
 
-makePlot <- function(dataForecast,plotTitle) {
+makePlot <- function(dataForecast) {
   gap<-as.character(dataForecast$forecast[dataForecast$date==max(dataForecast$date)]-dataForecast$forecastSupply[dataForecast$date==max(dataForecast$date)])
-  gapText<-grobTree(textGrob(paste("Anticipated Gap: ",gap,sep=''), x=0.15,  y=0.85, hjust=0,
-                             gp=gpar(col="purple", fontsize=13)))
+
   dataForecast %>%
     ggplot(aes(date, headcount)) +
     geom_line(aes(x = date, y = headcount),na.rm=TRUE,color="#1B7837", size=1) +
@@ -47,8 +46,7 @@ makePlot <- function(dataForecast,plotTitle) {
     theme_fivethirtyeight() +
     ylab("Headcount") +
     theme(axis.title.y = element_text()) +
-    labs(title = plotTitle) +
-    annotation_custom(gapText)
+    labs(title = paste("Anticipated Gap:",gap,sep=''))
 }
 
 #makePlot(busAForecast,"Business A")

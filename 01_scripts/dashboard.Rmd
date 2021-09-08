@@ -7,6 +7,9 @@ output:
 runtime: shiny
 ---
 
+
+
+
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(shiny)
@@ -46,7 +49,7 @@ busB<-makeHist("2018",lengthOut,1010,990)
 busC<-makeHist("2018",lengthOut,1580,1120)
 ```
 
-Column {data-height=100}
+Column {data-height=120}
 -----------------------------------------------------------------------
 
 ### Business A
@@ -55,11 +58,17 @@ useShinyjs(rmd = TRUE)
 
 numericInputIcon(
   inputId = "busAGrowth",
-  label   = h4(""),
+  label   = h4("Projected Growth:"),
   value = 50,
   min = -100,
   max = 500,
   icon = icon("percent"))
+```
+
+```{r}
+### create forecasts based on bus-level data and inputs
+busAForecast <- reactive({makeForecast(busA,"2021",lengthOut,input$busAGrowth,busASupplySlope)})
+renderPlot({makePlot(busAForecast())})
 ```
 
 ### Business B
@@ -67,7 +76,7 @@ numericInputIcon(
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busBGrowth",
-  label   = h4(""),
+  label   = h4("Projected Growth:"),
   value = 50,
   min = -100,
   max = 500,
@@ -79,7 +88,7 @@ numericInputIcon(
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busCGrowth",
-  label   = h4(""),
+  label   = h4("Projected Growth:"),
   value = 50,
   min = -100,
   max = 500,
@@ -87,28 +96,88 @@ numericInputIcon(
 ```
 
 
-Column {data-height=300}
+Column {data-height=150}
 -----------------------------------------------------------------------
 
-
+### Overall
 ```{r}
 ### create forecasts based on bus-level data and inputs
 busAForecast <- reactive({makeForecast(busA,"2021",lengthOut,input$busAGrowth,busASupplySlope)})
-renderPlot({makePlot(busAForecast(),"Business A")})
+renderPlot({makePlot(busAForecast())})
 ```
 
-
+### Overall
 ```{r}
 ### create forecasts based on bus-level data and inputs
 busBForecast <- reactive({makeForecast(busB,"2021",lengthOut,input$busBGrowth,busBSupplySlope)})
-renderPlot({makePlot(busBForecast(),"Business B")})
+renderPlot({makePlot(busBForecast())})
 ```
 
-
+### Overall
 ```{r}
 ### create forecasts based on bus-level data and inputs
 busCForecast <- reactive({makeForecast(busC,"2021",lengthOut,input$busCGrowth,busCSupplySlope)})
-renderPlot({makePlot(busCForecast(),"Business C")})
+renderPlot({makePlot(busCForecast())})
+```
+
+Column {data-height=150}
+-----------------------------------------------------------------------
+
+### Gaps
+```{r}
+gap<-reactive(busAForecast()$forecast[busAForecast()$date==max(busAForecast()$date)]-busAForecast()$forecastSupply[busAForecast()$date==max(busAForecast()$date)])
+
+renderText({ paste("Overall:",gap(),sep=' ') })
+```
+
+### Gaps
+```{r}
+renderText({ 8 })
+```
+
+### Gaps
+```{r}
+renderText({ 8 })
+```
+
+Column {data-height=150}
+-----------------------------------------------------------------------
+
+### Pyramid Target
+```{r}
+useShinyjs(rmd = TRUE)
+
+numericInputIcon(
+  inputId = "busAPyramidConstraint",
+  label   = h4(""),
+  value = 50,
+  min = -100,
+  max = 500,
+  icon = icon("percent"))
+```
+
+### Pyramid Target
+```{r}
+useShinyjs(rmd = TRUE)
+numericInputIcon(
+  inputId = "busBPyramidConstraint",
+  label   = h4(""),
+  value = 50,
+  min = -100,
+  max = 500,
+  icon = icon("percent"))
+```
+
+### Pyramid Target
+```{r}
+useShinyjs(rmd = TRUE)
+numericInputIcon(
+  inputId = "busCPyramidConstraint",
+  label   = h4(""),
+  value = 50,
+  min = -100,
+  max = 500,
+  icon = icon("percent"))
 ```
 
 
