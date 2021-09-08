@@ -37,40 +37,49 @@ source('..\\01_scripts\\99_functions.R')
 set.seed(15) 
 lengthOut<-12
 
-busASupplySlope<-.3
-busBSupplySlope<-.5
-busCSupplySlope<-.6
+busASupplySlope<-20
+busBSupplySlope<-50
+busCSupplySlope<-60
 
 busA<-makeHist("2018",lengthOut,400,950)
 busB<-makeHist("2018",lengthOut,1010,990)
 busC<-makeHist("2018",lengthOut,1580,1120)
 ```
 
-Sidebar {.sidebar}
-=======================================================================
+Column {data-height=100}
+-----------------------------------------------------------------------
 
-### Growth Parameters
-
+### Business A
 ```{r}
 useShinyjs(rmd = TRUE)
 
 numericInputIcon(
   inputId = "busAGrowth",
-  label   = h4("bus A Growth"),
+  label   = h4(""),
   value = 50,
   min = -100,
   max = 500,
   icon = icon("percent"))
+```
+
+### Business B
+```{r}
+useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busBGrowth",
-  label   = h4("bus B Growth"),
+  label   = h4(""),
   value = 50,
   min = -100,
   max = 500,
   icon = icon("percent"))
+```
+
+### Business C
+```{r}
+useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busCGrowth",
-  label   = h4("bus C Growth"),
+  label   = h4(""),
   value = 50,
   min = -100,
   max = 500,
@@ -78,80 +87,28 @@ numericInputIcon(
 ```
 
 
+Column {data-height=300}
+-----------------------------------------------------------------------
 
-
-
-Column {data-height=650}
-=======================================================================
-
-### Chart A
 
 ```{r}
 ### create forecasts based on bus-level data and inputs
-busAForecast <- reactive({
-busACurrent<-busA$headcount[busA$date==max(busA$date)]
-busAEnding<-busACurrent+busACurrent*input$busAGrowth/100
-busAStart<-busACurrent+(busAEnding-busACurrent)/lengthOut
-busAEndingSupply<-busACurrent-busACurrent*busASupplySlope
-busAStartSupply<-busACurrent-(busACurrent-busAEndingSupply)/lengthOut
-
-
-tibble(
-  date = tk_make_timeseries("2021", by = "quarter", length_out=lengthOut),
-  forecast=round(seq(busAStart,busAEnding,length=lengthOut),0),
-  forecastSupply=round(seq(busAStartSupply,busAEndingSupply,length=lengthOut),0),
-  ) %>%
-  bind_rows(busA,.) %>%
-  mutate(forecast=ifelse(date==max(busA$date),headcount,forecast),
-         forecastSupply=ifelse(date==max(busA$date),headcount,forecastSupply))
-})
-
-renderPlot({
-  
-busAForecast() %>%
-ggplot(aes(date, headcount)) +
-     geom_line(aes(x = date, y = headcount),na.rm=TRUE,color="#1B7837", size=1) +
-      geom_point(aes(x = date, y = headcount),na.rm=TRUE,color="#1B7837",size=3) +
-      geom_line(aes(x = date, y = forecast),na.rm=TRUE,color="blue", size=1) +
-      geom_line(aes(x = date, y = forecastSupply),na.rm=TRUE,color="red", size=1)
-
-})
-
+busAForecast <- reactive({makeForecast(busA,"2021",lengthOut,input$busAGrowth,busASupplySlope)})
+renderPlot({makePlot(busAForecast(),"Business A")})
 ```
 
-### Chart B
 
 ```{r}
 ### create forecasts based on bus-level data and inputs
-busAForecast <- reactive({
-busACurrent<-busA$headcount[busA$date==max(busA$date)]
-busAEnding<-busACurrent+busACurrent*input$busAGrowth/100
-busAStart<-busACurrent+(busAEnding-busACurrent)/lengthOut
-busAEndingSupply<-busACurrent-busACurrent*busASupplySlope
-busAStartSupply<-busACurrent-(busACurrent-busAEndingSupply)/lengthOut
+busBForecast <- reactive({makeForecast(busB,"2021",lengthOut,input$busBGrowth,busBSupplySlope)})
+renderPlot({makePlot(busBForecast(),"Business B")})
+```
 
 
-tibble(
-  date = tk_make_timeseries("2021", by = "quarter", length_out=lengthOut),
-  forecast=round(seq(busAStart,busAEnding,length=lengthOut),0),
-  forecastSupply=round(seq(busAStartSupply,busAEndingSupply,length=lengthOut),0),
-  ) %>%
-  bind_rows(busA,.) %>%
-  mutate(forecast=ifelse(date==max(busA$date),headcount,forecast),
-         forecastSupply=ifelse(date==max(busA$date),headcount,forecastSupply))
-})
-
-renderPlot({
-  
-busAForecast() %>%
-ggplot(aes(date, headcount)) +
-     geom_line(aes(x = date, y = headcount),na.rm=TRUE,color="#1B7837", size=1) +
-      geom_point(aes(x = date, y = headcount),na.rm=TRUE,color="#1B7837",size=3) +
-      geom_line(aes(x = date, y = forecast),na.rm=TRUE,color="blue", size=1) +
-      geom_line(aes(x = date, y = forecastSupply),na.rm=TRUE,color="red", size=1)
-
-})
-
+```{r}
+### create forecasts based on bus-level data and inputs
+busCForecast <- reactive({makeForecast(busC,"2021",lengthOut,input$busCGrowth,busCSupplySlope)})
+renderPlot({makePlot(busCForecast(),"Business C")})
 ```
 
 
