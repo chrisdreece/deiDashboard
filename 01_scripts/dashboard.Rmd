@@ -5,10 +5,51 @@ output:
     orientation: rows
     vertical_layout: scroll
 runtime: shiny
+
 ---
 
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 8px;
+}
+h1.title {
+  font-size: 38px;
+  color: DarkRed;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: DarkBlue;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: DarkBlue;
+}
+h3 { /* Header 3 */
+  font-size: 10px;
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+<!-- <style>                      -->
+<!-- .navbar { -->
+<!--   background-color:crimson; -->
+<!--   border-color:black; -->
+<!-- } -->
+<!-- .navbar-brand { -->
+<!-- color:black!important; -->
+<!-- } -->
 
 
+<!-- </style>   -->
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
@@ -49,104 +90,49 @@ busB<-makeHist("2018",lengthOut,1010,990)
 busC<-makeHist("2018",lengthOut,1580,1120)
 ```
 
-Column {data-height=120}
------------------------------------------------------------------------
+Column {.sidebar}
+---------------------------------------------------------------
 
-### Business A
+### Projected Growth Business A
 ```{r}
 useShinyjs(rmd = TRUE)
 
 numericInputIcon(
   inputId = "busAGrowth",
-  label   = h4("Projected Growth:"),
+  label   = h4(""),
   value = 50,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
-```{r}
-### create forecasts based on bus-level data and inputs
-busAForecast <- reactive({makeForecast(busA,"2021",lengthOut,input$busAGrowth,busASupplySlope)})
-renderPlot({makePlot(busAForecast())})
-```
-
-### Business B
+### Projected Growth Business B
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busBGrowth",
-  label   = h4("Projected Growth:"),
-  value = 50,
+  label   = h4(""),
+  value = -5,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
-### Business C
+### Projected Growth Business C
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busCGrowth",
-  label   = h4("Projected Growth:"),
-  value = 50,
+  label   = h4(""),
+  value = -50,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
-
-Column {data-height=150}
------------------------------------------------------------------------
-
-### Overall
-```{r}
-### create forecasts based on bus-level data and inputs
-busAForecast <- reactive({makeForecast(busA,"2021",lengthOut,input$busAGrowth,busASupplySlope)})
-renderPlot({makePlot(busAForecast())})
-```
-
-### Overall
-```{r}
-### create forecasts based on bus-level data and inputs
-busBForecast <- reactive({makeForecast(busB,"2021",lengthOut,input$busBGrowth,busBSupplySlope)})
-renderPlot({makePlot(busBForecast())})
-```
-
-### Overall
-```{r}
-### create forecasts based on bus-level data and inputs
-busCForecast <- reactive({makeForecast(busC,"2021",lengthOut,input$busCGrowth,busCSupplySlope)})
-renderPlot({makePlot(busCForecast())})
-```
-
-Column {data-height=150}
------------------------------------------------------------------------
-
-### Gaps
-```{r}
-gap<-reactive(busAForecast()$forecast[busAForecast()$date==max(busAForecast()$date)]-busAForecast()$forecastSupply[busAForecast()$date==max(busAForecast()$date)])
-
-renderText({ paste("Overall:",gap(),sep=' ') })
-```
-
-### Gaps
-```{r}
-renderText({ 8 })
-```
-
-### Gaps
-```{r}
-renderText({ 8 })
-```
-
-Column {data-height=150}
------------------------------------------------------------------------
-
-### Pyramid Target
+### Pyramid Constaint Business A
 ```{r}
 useShinyjs(rmd = TRUE)
-
 numericInputIcon(
   inputId = "busAPyramidConstraint",
   label   = h4(""),
@@ -156,7 +142,7 @@ numericInputIcon(
   icon = icon("percent"))
 ```
 
-### Pyramid Target
+### Pyramid Constaint Business B
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
@@ -168,7 +154,7 @@ numericInputIcon(
   icon = icon("percent"))
 ```
 
-### Pyramid Target
+### Pyramid Constaint Business C
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
@@ -182,4 +168,227 @@ numericInputIcon(
 
 
 
+### Female Promotions (%), Business A
+```{r}
+useShinyjs(rmd = TRUE)
+numericInputIcon(
+  inputId = "busAFemPromotions",
+  label   = h4(""),
+  value = 30,
+  min = -100,
+  max = 500,
+  icon = icon("percent"))
+```
+
+### Female Promotions (%), Business B
+```{r}
+useShinyjs(rmd = TRUE)
+numericInputIcon(
+  inputId = "busBFemPromotions",
+  label   = h4(""),
+  value = 25,
+  min = -100,
+  max = 500,
+  icon = icon("percent"))
+```
+
+
+### Female Promotions (%), Business C
+```{r}
+useShinyjs(rmd = TRUE)
+numericInputIcon(
+  inputId = "busCFemPromotions",
+  label   = h4(""),
+  value = 40,
+  min = -100,
+  max = 500,
+  icon = icon("percent"))
+```
+
+### Female New Hires (%), Business A
+```{r}
+useShinyjs(rmd = TRUE)
+numericInputIcon(
+  inputId = "busAFemHires",
+  label   = h4(""),
+  value = 33,
+  min = -100,
+  max = 500,
+  icon = icon("percent"))
+```
+
+### Female New Hires (%), Business B
+```{r}
+useShinyjs(rmd = TRUE)
+numericInputIcon(
+  inputId = "busBFemHires",
+  label   = h4(""),
+  value = 60,
+  min = -100,
+  max = 500,
+  icon = icon("percent"))
+```
+
+
+### Female New Hires (%), Business C
+```{r}
+useShinyjs(rmd = TRUE)
+numericInputIcon(
+  inputId = "busCFemHires",
+  label   = h4(""),
+  value = 40,
+  min = -100,
+  max = 500,
+  icon = icon("percent"))
+```
+
+
+Column {data-height=200}
+-----------------------------------------------------------------------
+
+### busAForecast
+```{r}
+orgWideMgrRatio<-.20
+orgWideFemStaffPect<-.45
+orgWideFemMgrPect<-.15
+orgWidePopulation<-busA$headcount[busA$date==max(busA$date)]+busB$headcount[busB$date==max(busB$date)]+busC$headcount[busC$date==max(busC$date)]
+
+orgWideMgrs<-round(orgWideMgrRatio*orgWidePopulation,0)
+orgWideFemMgrs<-round(orgWideFemMgrPect*orgWideMgrs,0)
+orgWideMaleMgrs<-orgWideMgrs-orgWideFemMgrs
+orgWideStaff<-round(orgWidePopulation-orgWideMgrs,0)
+orgWideFemStaff<-round(orgWideFemStaffPect*orgWideStaff,0)
+orgWideMaleStaff<-orgWideStaff-orgWideFemStaff
+
+supply<-reactive(busAForecast()$forecastSupply[busAForecast()$date==max(busAForecast()$date)] + 
+                  busBForecast()$forecastSupply[busBForecast()$date==max(busBForecast()$date)] +
+                  busCForecast()$forecastSupply[busCForecast()$date==max(busCForecast()$date)])
+
+lostSupply<-reactive(orgWidePopulation-supply())
+
+lostFemMgrs<-reactive(orgWideFemMgrs/orgWidePopulation*lostSupply())
+lostMaleMgrs<-reactive(orgWideMaleMgrs/orgWidePopulation*lostSupply())
+lostFemStaff<-reactive(orgWideFemStaff/orgWidePopulation*lostSupply())
+lostMaleStaff<-reactive(orgWideMaleStaff/orgWidePopulation*lostSupply())
+
+orgWideFemMgrsNew<-reactive(orgWideFemMgrs-lostFemMgrs()+newFemMgrsA()+newFemMgrsB()+newFemMgrsC())
+orgWideMaleMgrsNew<-reactive(orgWideMaleMgrs-lostMaleMgrs()+newMgrsA()+newMgrsB()+newMgrsC()-newFemMgrsA()-newFemMgrsB()-newFemMgrsC())
+orgWideFemStaffNew<-reactive(orgWideFemStaff-lostFemStaff()+newFemStaffA()+newFemStaffB()+newFemStaffC())
+orgWideMaleStaffNew<-reactive(orgWideMaleStaff-lostMaleStaff()+newStaffA()+newStaffB()+newStaffC()-newFemStaffA()-newFemStaffB()-newFemStaffC())
+
+
+diversity<-reactive(data.frame
+(
+  period=c(rep('prevYear',4),rep('forecast',4)),
+  gender=rep(c('Female','Female','Male','Male'),2),
+  mgr=rep(c('Manager','Staff'),4),
+  count=c(orgWideFemMgrs,orgWideFemStaff,orgWideMaleMgrs,orgWideMaleStaff,orgWideFemMgrsNew(),orgWideFemStaffNew(),orgWideMaleMgrsNew(),orgWideMaleStaffNew())
+)
+)
+
+
+orgHeadcountNew<-reactive(orgWidePopulation-lostSupply()+newMgrsA()+newStaffA()+newMgrsB()+newStaffB()+newMgrsC()+newStaffC())
+
+totalGaps<-reactive(gapA()+gapB()+gapC())
+
+```
+
+
+
+
+Column {data-height=150}
+-----------------------------------------------------------------------
+
+### Projected Supply and Demand
+```{r}
+### create forecasts based on bus-level data and inputs
+busAForecast <- reactive({makeForecast(busA,"2021",lengthOut,input$busAGrowth,busASupplySlope)})
+renderPlot({makePlot(busAForecast())})
+```
+
+### Projected Supply and Demand
+```{r}
+### create forecasts based on bus-level data and inputs
+busBForecast <- reactive({makeForecast(busB,"2021",lengthOut,input$busBGrowth,busBSupplySlope)})
+renderPlot({makePlot(busBForecast())})
+```
+
+### Projected Supply and Demand
+```{r}
+### create forecasts based on bus-level data and inputs
+busCForecast <- reactive({makeForecast(busC,"2021",lengthOut,input$busCGrowth,busCSupplySlope)})
+renderPlot({makePlot(busCForecast())})
+```
+
+Column {data-height=200}
+-----------------------------------------------------------------------
+
+### Gaps
+```{r}
+gapA<-reactive(busAForecast()$forecast[busAForecast()$date==max(busAForecast()$date)]-busAForecast()$forecastSupply[busAForecast()$date==max(busAForecast()$date)])
+newMgrsA<-reactive(round(input$busAPyramidConstraint*gapA()/100,0))
+newStaffA<-reactive(gapA()-round(input$busAPyramidConstraint*gapA()/100,0))
+newFemMgrsA<-reactive(round(input$busAFemPromotions*newMgrsA()/100,0))
+newFemStaffA<-reactive(round(input$busAFemHires*newStaffA()/100,0))
+
+
+htmlOutput("openingsA")
+  output$openingsA <- renderUI({
+    HTML(paste("Overall: ", gapA(), "<br/>", 
+               "Managers: ", newMgrsA(), "<br/>",
+               "Staff: ", newStaffA(), "<br/>",
+               "<br/>",
+               "New Female Managers: ","<br/>" ,
+               input$busAFemPromotions/100, " X ", newMgrsA(), " = ",  newFemMgrsA(),"<br/>" ,"<br/>",
+               "New Female Staff: ","<br/>" ,
+               input$busAFemHires/100, " X ", newStaffA(), " = ",  newFemStaffA(),
+               sep=''))
+  })
+```
+
+### Gaps
+```{r}
+gapB<-reactive(busBForecast()$forecast[busBForecast()$date==max(busBForecast()$date)]-busBForecast()$forecastSupply[busBForecast()$date==max(busBForecast()$date)])
+newMgrsB<-reactive(round(input$busBPyramidConstraint*gapB()/100,0))
+newStaffB<-reactive(gapB()-round(input$busBPyramidConstraint*gapB()/100,0))
+newFemMgrsB<-reactive(round(input$busBFemPromotions*newMgrsB()/100,0))
+newFemStaffB<-reactive(round(input$busBFemHires*newStaffB()/100,0))
+
+
+htmlOutput("openingsB")
+  output$openingsB <- renderUI({
+    HTML(paste("Overall: ", gapB(), "<br/>", 
+               "Managers: ", newMgrsB(), "<br/>",
+               "Staff: ", gapB()-round(input$busBPyramidConstraint*gapB()/100,0), "<br/>",
+               "<br/>",
+               "New Female Managers: ","<br/>" ,
+               input$busBFemPromotions/100, " X ", newMgrsB(), " = ",  newFemMgrsB(),"<br/>","<br/>",
+               "New Female Staff: ","<br/>" ,
+               input$busBFemHires/100, " X ", newStaffB(), " = ",  newFemStaffB(),
+               sep=''))
+  })
+```
+
+### Gaps
+```{r}
+gapC<-reactive(busCForecast()$forecast[busCForecast()$date==max(busCForecast()$date)]-busCForecast()$forecastSupply[busCForecast()$date==max(busCForecast()$date)])
+newMgrsC<-reactive(round(input$busCPyramidConstraint*gapC()/100,0))
+newStaffC<-reactive(gapC()-round(input$busCPyramidConstraint*gapC()/100,0))
+newFemMgrsC<-reactive(round(input$busCFemPromotions*newMgrsC()/100,0))
+newFemStaffC<-reactive(round(input$busCFemHires*newStaffC()/100,0))
+
+
+htmlOutput("openingsC")
+  output$openingsC <- renderUI({
+    HTML(paste("Overall: ", gapC(), "<br/>", 
+               "Managers: ", newMgrsC(), "<br/>",
+               "Staff: ", gapC()-round(input$busCPyramidConstraint*gapC()/100,0), "<br/>",
+               "<br/>",
+               "New Female Managers: ","<br/>" ,
+               input$busCFemPromotions/100, " X ", newMgrsC(), " = ",  newFemMgrsC(),"<br/>","<br/>",
+               "New Female Staff: ","<br/>" ,
+               input$busCFemHires/100, " X ", newStaffC(), " = ",  newFemStaffC(),
+               sep=''))
+  })
+```
 
