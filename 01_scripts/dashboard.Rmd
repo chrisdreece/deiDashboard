@@ -1,5 +1,5 @@
 ---
-title: "Sales Dashboard"
+title: "D & I Planning"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -9,6 +9,12 @@ runtime: shiny
 ---
 
 <style type="text/css">
+
+<!-- .navbar { -->
+<!--   background-color:lightgreen; -->
+<!--   border-color:black; -->
+<!-- } -->
+
 
 body{ /* Normal  */
       font-size: 12px;
@@ -29,7 +35,7 @@ h2 { /* Header 2 */
   color: DarkBlue;
 }
 h3 { /* Header 3 */
-  font-size: 10px;
+  font-size: 13px;
 }
 code.r{ /* Code block */
     font-size: 12px;
@@ -59,6 +65,8 @@ library(shinyjs)
 library(ggthemes)
 library(RColorBrewer)
 library(grid)
+library(DiagrammeR)
+
 
 # Core
 library(tidyverse)
@@ -82,175 +90,379 @@ set.seed(15)
 lengthOut<-12
 
 busASupplySlope<-20
-busBSupplySlope<-50
-busCSupplySlope<-60
+busBSupplySlope<-25
+busCSupplySlope<-10
 
 busA<-makeHist("2018",lengthOut,400,950)
-busB<-makeHist("2018",lengthOut,1010,990)
-busC<-makeHist("2018",lengthOut,1580,1120)
+busB<-makeHist("2018",lengthOut,1010,1350)
+busC<-makeHist("2018",lengthOut,1580,1670)
+
+busAGrowth<-50
+busBGrowth<-5
+busCGrowth<-10
+
+busAPyramidConst<-15
+busBPyramidConst<-10
+busCPyramidConst<-12
+
+busAHireRate<-35
+busBHireRate<-55
+busCHireRate<-45
+
+busAPromRate<-15
+busBPromRate<-25
+busCPromRate<-20
+
+
 ```
 
-Column {.sidebar}
----------------------------------------------------------------
 
-### Projected Growth Business A
+Sidebar {.sidebar}
+=======================================================================
+
+Projected Demand {data-height=600}
+-----------------------------------------------------------------------
+
+
+
+
+### Business A
 ```{r}
 useShinyjs(rmd = TRUE)
 
 numericInputIcon(
   inputId = "busAGrowth",
   label   = h4(""),
-  value = 50,
+  value = busAGrowth,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
-### Projected Growth Business B
+### Business B
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busBGrowth",
   label   = h4(""),
-  value = -5,
+  value = busBGrowth,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
-### Projected Growth Business C
+### Business C
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busCGrowth",
   label   = h4(""),
-  value = -50,
+  value = busCGrowth,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
-### Pyramid Constaint Business A
+```{r}
+actionButton(inputId = "resetGrowth", label = "Reset", color='grey')
+
+observeEvent(eventExpr = input$resetGrowth, handlerExpr = {
+  
+  updateNumericInput(
+   inputId = "busAGrowth",
+   value = busAGrowth)
+  
+  updateNumericInput(
+   inputId = "busBGrowth",
+   value = busBGrowth)
+    
+  updateNumericInput(
+   inputId = "busCGrowth",
+   value = busCGrowth)
+  
+})
+```
+
+
+
+Pyramid Constraints {data-height=600}
+-----------------------------------------------------------------------
+
+### Business A
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busAPyramidConstraint",
   label   = h4(""),
-  value = 50,
+  value = busAPyramidConst,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
-### Pyramid Constaint Business B
+### Business B
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busBPyramidConstraint",
   label   = h4(""),
-  value = 50,
+  value = busBPyramidConst,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
-### Pyramid Constaint Business C
+### Business C
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busCPyramidConstraint",
   label   = h4(""),
-  value = 50,
+  value = busCPyramidConst,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
+```{r}
+actionButton(inputId = "resetPyramid", label = "Reset", color='grey')
+
+observeEvent(eventExpr = input$resetPyramid, handlerExpr = {
+  
+  updateNumericInput(
+   inputId = "busAPyramidConstraint",
+   value = busAPyramidConst)
+  
+  updateNumericInput(
+   inputId = "busBPyramidConstraint",
+   value = busBPyramidConst)
+    
+  updateNumericInput(
+   inputId = "busCPyramidConstraint",
+   value = busCPyramidConst)
+  
+})
+```
 
 
-### Female Promotions (%), Business A
+Female Promotion Rate {data-height=600}
+-----------------------------------------------------------------------
+
+### Business A
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busAFemPromotions",
   label   = h4(""),
-  value = 30,
+  value = busAPromRate,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
-### Female Promotions (%), Business B
+### Business B
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busBFemPromotions",
   label   = h4(""),
-  value = 25,
+  value = busBPromRate,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
 
-### Female Promotions (%), Business C
+### Business C
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busCFemPromotions",
   label   = h4(""),
-  value = 40,
+  value = busCPromRate,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
-### Female New Hires (%), Business A
+```{r}
+actionButton(inputId = "resetPromotions", label = "Reset", color='grey')
+
+observeEvent(eventExpr = input$resetPromotions, handlerExpr = {
+  
+  updateNumericInput(
+   inputId = "busAFemPromotions",
+   value = busAPromRate)
+  
+  updateNumericInput(
+   inputId = "busBFemPromotions",
+   value = busBPromRate)
+    
+  updateNumericInput(
+   inputId = "busCFemPromotions",
+   value = busCPromRate)
+  
+})
+```
+
+Female New Hire Rate {data-height=600}
+-----------------------------------------------------------------------
+
+### Business A
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busAFemHires",
   label   = h4(""),
-  value = 33,
+  value = busAHireRate,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
-### Female New Hires (%), Business B
+### Business B
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busBFemHires",
   label   = h4(""),
-  value = 60,
+  value = busBHireRate,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
-
-### Female New Hires (%), Business C
+### Business C
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
   inputId = "busCFemHires",
   label   = h4(""),
-  value = 40,
+  value = busCHireRate,
   min = -100,
   max = 500,
   icon = icon("percent"))
 ```
 
+```{r}
+actionButton(inputId = "resetHires", label = "Reset", color='grey')
 
-Column {data-height=200}
+observeEvent(eventExpr = input$resetHires, handlerExpr = {
+  
+  updateNumericInput(
+   inputId = "busAFemHires",
+   value = busAGrowth)
+  
+  updateNumericInput(
+   inputId = "busBFemHires",
+   value = busBGrowth)
+    
+  updateNumericInput(
+   inputId = "busCFemHires",
+   value = busCGrowth)
+  
+})
+```
+
+
+Overview
+=======================================================================
+
+Column {data-height=400}
 -----------------------------------------------------------------------
 
-### busAForecast
+### D & I Drivers
 ```{r}
-orgWideMgrRatio<-.20
-orgWideFemStaffPect<-.45
-orgWideFemMgrPect<-.15
+grViz(diagram = "digraph flowchart {
+      # define node aesthetics
+      node [fontname = Arial, shape = oval, color = '#A8DDB5', style = filled, fontcolor = White]        
+      tab1 [label = '@@1']
+      tab2 [label = '@@2']
+      tab4 [label = '@@4']
+      tab5 [label = '@@5']
+      tab6 [label = '@@6']
+      node [fontname = Arial, shape = rectangle, color = '#74ADD1', style = filled, fontcolor = White]
+      tab3 [label = '@@3']
+      tab7 [label = '@@7']
+
+# set up node layout
+      tab1 -> tab3;
+      tab2 -> tab3;
+      tab3 -> tab4;
+      tab3 -> tab5;
+      tab3 -> tab6;
+      tab4 -> tab7;
+      tab5 -> tab7;
+      tab6 -> tab7;
+      
+      }
+      [1]: 'Projected Attrition'
+      [2]: 'Projected Demand'
+      [3]: 'Projected Talent Gaps'
+      [4]: 'Hiring Patterns'
+      [5]: 'Promotions / Mobility Patterns'
+      [6]: 'Pyramid Constraints'
+      [7]: 'Projected Organizational Diversity'
+      ")
+```
+
+
+
+
+Diversity Targets
+=======================================================================
+
+Column {data-height=400}
+-----------------------------------------------------------------------
+
+### Gender Representation, Current and Target
+```{r}
+targetMgr<-.25
+targetStaff<-.4
+
+diversity2<-reactive(diversity() %>%
+                       mutate(countPect=ifelse(gender=='Female' & period=='forecast' & mgr=='Manager',targetMgr,countPect)) %>%
+                       mutate(countPect=ifelse(gender=='Male' & period=='forecast' & mgr=='Manager',1-targetMgr,countPect)) %>%
+                       mutate(countPect=ifelse(gender=='Female' & period=='forecast' & mgr=='Staff',targetStaff,countPect)) %>%
+                       mutate(countPect=ifelse(gender=='Male' & period=='forecast' & mgr=='Staff',1-targetStaff,countPect)) %>%
+  group_by(mgr,period) %>%
+  mutate(label_y = cumsum(countPect) - 0.5 * countPect)
+)
+
+colors1<-c("#9970AB","#5AAE61")
+myColors<-colors1
+names(myColors) <- c('Male','Female')
+
+percent <- function(x, digits = 1, format = "f", ...) {
+  paste0(formatC(100 * x, format = format, digits = digits, ...), "%")
+}
+
+renderPlot({ggplot(diversity2(),aes(x = period, y = countPect, fill=gender)) +
+  geom_bar(stat='identity') +
+  scale_fill_manual(values=myColors) +
+  coord_flip() +
+  facet_grid(. ~ mgr) +
+  scale_y_continuous("",labels = scales::percent_format()) +
+  scale_x_discrete('',labels=c('Target \n (2023 Year End)','Current \n (2020 Year End)')) +
+  #labs(title = 'Female vs. Male as % of Total Headcount, Current and Projected') +
+  #theme(plot.title = element_text(hjust = 0.5)) +
+  theme_fivethirtyeight() +
+  theme(legend.title = element_blank()) +
+  geom_text(aes(y = label_y, label = percent(countPect)), colour = "black")
+})
+```
+
+Diversity Projections
+=======================================================================
+
+Column {data-height=400}
+-----------------------------------------------------------------------
+
+### Gender Representation, Current and Projected
+```{r}
+orgWideMgrRatio<-.35
+orgWideFemStaffPect<-.343
+orgWideFemMgrPect<-.12
 orgWidePopulation<-busA$headcount[busA$date==max(busA$date)]+busB$headcount[busB$date==max(busB$date)]+busC$headcount[busC$date==max(busC$date)]
 
 orgWideMgrs<-round(orgWideMgrRatio*orgWidePopulation,0)
@@ -283,7 +495,15 @@ diversity<-reactive(data.frame
   gender=rep(c('Female','Female','Male','Male'),2),
   mgr=rep(c('Manager','Staff'),4),
   count=c(orgWideFemMgrs,orgWideFemStaff,orgWideMaleMgrs,orgWideMaleStaff,orgWideFemMgrsNew(),orgWideFemStaffNew(),orgWideMaleMgrsNew(),orgWideMaleStaffNew())
-)
+)  %>%
+  mutate(gender=as.factor(gender)) %>%
+  mutate(gender=relevel(gender, "Male")) %>%
+  group_by(period,mgr) %>%
+  mutate(total=sum(count)) %>%
+  ungroup() %>%
+  mutate(countPect=round(count/total,3)) %>%
+  group_by(mgr,period) %>%
+  mutate(label_y = cumsum(countPect) - 0.5 * countPect)
 )
 
 
@@ -293,27 +513,62 @@ totalGaps<-reactive(gapA()+gapB()+gapC())
 
 ```
 
+```{r}
+
+colors1<-c("#9970AB","#5AAE61")
+colors1<-c("#80CDC1","#B8E186")
+colors1<-c("#CCEBC5","#74ADD1")
+
+
+
+myColors<-colors1
+names(myColors) <- c('Male','Female')
+
+percent <- function(x, digits = 1, format = "f", ...) {
+  paste0(formatC(100 * x, format = format, digits = digits, ...), "%")
+}
+
+#ggplot(diversity,aes(x = period, y = countPect, fill=forcats::fct_rev(gender))) +
+renderPlot({ggplot(diversity(),aes(x = period, y = countPect, fill=gender)) +
+  geom_bar(stat='identity') +
+  scale_fill_manual(values=myColors) +
+  coord_flip() +
+  facet_grid(. ~ mgr) +
+  scale_y_continuous("",labels = scales::percent_format()) +
+  scale_x_discrete('',labels=c('Projected \n (2023 Year End)','Current \n (2020 Year End)')) +
+  #labs(title = 'Female vs. Male as % of Total Headcount, Current and Projected') +
+  #theme(plot.title = element_text(hjust = 0.5)) +
+  theme_fivethirtyeight() +
+  theme(legend.title = element_blank()) +
+  geom_text(aes(y = label_y, label = percent(countPect)), colour = "black")
+})
+  
+#renderDataTable({diversity()})
+#renderPlot()
+
+```
+
 
 
 
 Column {data-height=150}
 -----------------------------------------------------------------------
 
-### Projected Supply and Demand
+### Business A
 ```{r}
 ### create forecasts based on bus-level data and inputs
 busAForecast <- reactive({makeForecast(busA,"2021",lengthOut,input$busAGrowth,busASupplySlope)})
 renderPlot({makePlot(busAForecast())})
 ```
 
-### Projected Supply and Demand
+### Business B
 ```{r}
 ### create forecasts based on bus-level data and inputs
 busBForecast <- reactive({makeForecast(busB,"2021",lengthOut,input$busBGrowth,busBSupplySlope)})
 renderPlot({makePlot(busBForecast())})
 ```
 
-### Projected Supply and Demand
+### Business C
 ```{r}
 ### create forecasts based on bus-level data and inputs
 busCForecast <- reactive({makeForecast(busC,"2021",lengthOut,input$busCGrowth,busCSupplySlope)})
@@ -391,4 +646,53 @@ htmlOutput("openingsC")
                sep=''))
   })
 ```
+
+
+
+Hiring and Mobility
+=======================================================================
+
+Column {data-height=400}
+-----------------------------------------------------------------------
+
+```{r}
+hiring<-data.frame(Business=c('Business A','Business B','Business C'),
+                   pectFemale=c(35,48,46),
+                   pectFemaleHires=c(busAHireRate,busBHireRate,busCHireRate))
+
+promotions<-data.frame(Business=c('Business A','Business B','Business C'),
+                   pectFemaleEligible=c(25,20,35),
+                   pectFemalePromotions=c(busAPromRate,busBPromRate,busCPromRate))
+```
+
+
+### Hiring
+```{r}
+ggplot(hiring, aes(x=pectFemale, y=pectFemaleHires)) + 
+  geom_point(color="#FDAE6B",size=12) +
+  #scale_size_continuous(range=c(2,12)) +
+  geom_label(aes(label = Business)) +
+  scale_x_continuous('Female Headcount as % of Total Headcount', limits=c(0,100)) +
+  scale_y_continuous('Female Hiring as % of Total Hiring', limits=c(0,100)) +
+  labs(title="Female Representation vs. Hires", subtitle="Previous Year") +
+  geom_abline(slope=1)
+```
+
+
+### Promotions
+```{r}
+ggplot(promotions, aes(x=pectFemaleEligible, y=pectFemalePromotions)) + 
+  geom_point(color="#FDAE6B",size=12) +
+  #scale_size_continuous(range=c(2,12)) +
+  geom_label(aes(label = Business)) +
+  scale_x_continuous('Female Eligible Population as % of Total Eligible Population', limits=c(0,100)) +
+  scale_y_continuous('Female Promotions as % of Total Promotions', limits=c(0,100)) +
+  labs(title="Female Promotions vs. Eligibility", subtitle="Previous Year") +
+  geom_abline(slope=1)
+```
+
+
+
+
+
 

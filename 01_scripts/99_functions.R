@@ -38,12 +38,13 @@ makePlot <- function(dataForecast) {
 
   dataForecast %>%
     ggplot(aes(date, headcount)) +
-    geom_line(aes(x = date, y = headcount),na.rm=TRUE,color="#1B7837", size=1) +
-    geom_point(aes(x = date, y = headcount),na.rm=TRUE,color="#1B7837",size=3) +
-    geom_line(aes(x = date, y = forecast),na.rm=TRUE,color="blue", size=1) +
-    geom_line(aes(x = date, y = forecastSupply),na.rm=TRUE,color="red", size=1) +
+    geom_line(aes(x = date, y = headcount),na.rm=TRUE,color="#878787", size=1) +
+    geom_point(aes(x = date, y = headcount),na.rm=TRUE,color="#878787",size=1) +
+    geom_line(aes(x = date, y = forecast),na.rm=TRUE,color="#0868AC", size=1) +
+    geom_line(aes(x = date, y = forecastSupply),na.rm=TRUE,color="#FB8072", size=1) +
     theme_fivethirtyeight() +
     ylab("Headcount") +
+    #labs(title="Projected Supply and Demand") +
     theme(axis.title.y = element_text())
 }
 
@@ -71,7 +72,9 @@ str(diversity)
 
 colors1<-c("#9970AB","#5AAE61")
 myColors<-colors1
-names(myColors) <- levels(diversity$gender)
+names(myColors) <- c('Male','Female')
+
+
 
 
 percent <- function(x, digits = 1, format = "f", ...) {
@@ -90,66 +93,7 @@ ggplot(diversity,aes(x = period, y = countPect, fill=gender)) +
   #theme(plot.title = element_text(hjust = 0.5)) +
   theme(legend.position = c(.85, 0.9), legend.title = element_blank()) +
   theme(plot.background = element_rect(colour = "black",size = 1)) +
-  geom_text(aes(y = label_y, label = percent(countPect)), colour = "white")
-
-
-ggplot(diversitySub) +
-  geom_bar( aes(x=mgr, y=count, fill=gender), position='dodge', stat="identity", alpha=0.5) +
-  geom_errorbar( aes(x=Species, ymin=mean-ic, ymax=mean+ic), width=0.4, colour="orange", alpha=0.9, size=1.5) +
-  ggtitle("using confidence interval")
-
-
-
-
-ce <- cabbage_exp %>%
-  arrange(Date, rev(Cultivar))
-
-data <- data.frame(
-  category=c("A", "B", "C"),
-  count=c(10, 60, 30)
-)
-
-# Compute percentages
-data$fraction = data$count / sum(data$count)
-
-# Compute the cumulative percentages (top of each rectangle)
-data$ymax = cumsum(data$fraction)
-
-# Compute the bottom of each rectangle
-data$ymin = c(0, head(data$ymax, n=-1))
-
-# Make the plot
-ggplot(data, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=category)) +
-  geom_rect() +
-  coord_polar(theta="y") + # Try to remove that to understand how the chart is built initially
-  xlim(c(2, 4)) # Try to remove that to see how to make a pie chart
-
-
-
-diversitySub<-filter(diversity,period=='prevYear')
-fig <- diversitySub %>% plot_ly(labels = ~gender+~mgr, values = ~count)
-fig <- fig %>% add_pie(hole = 0.6)
-fig <- fig %>% layout(title = "Donut charts using Plotly",  showlegend = F,
-                      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-                      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
-
-fig
-
-
-# Get Manufacturer
-mtcars$manuf <- sapply(strsplit(rownames(mtcars), " "), "[[", 1)
-
-df <- mtcars
-df <- df %>% group_by(manuf)
-df <- df %>% summarize(count = n())
-fig <- df %>% plot_ly(labels = ~manuf, values = ~count)
-fig <- fig %>% add_pie(hole = 0.6)
-fig <- fig %>% layout(title = "Donut charts using Plotly",  showlegend = F,
-                      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-                      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
-
-fig
-
-
+  geom_text(aes(y = label_y, label = percent(countPect)), colour = "white") +
+  geom_hline(yintercept=.25)
 
 
