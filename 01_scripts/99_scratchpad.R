@@ -20,7 +20,14 @@ library(scales)
 dataForecast <- makeForecast(busA,"2021",lengthOut,50,busASupplySlope)
 
 
+#demandLineSlope<-
 
+maxDemand<-max(dataForecast$forecast, na.rm=TRUE)  
+minDemand<-min(dataForecast$forecast, na.rm=TRUE)  
+
+#minDate<-dataForecast$date[dataForecast$forecast==minDemand, na.rm=TRUE)]
+
+ 
 demandLabelCoordinate<-min(dataForecast$forecast, na.rm=TRUE)+(max(dataForecast$forecast, na.rm=TRUE)-min(dataForecast$forecast, na.rm=TRUE))/2
 supplyLabelCoordinate<-min(dataForecast$forecastSupply, na.rm=TRUE)+(max(dataForecast$forecastSupply, na.rm=TRUE)-min(dataForecast$forecastSupply, na.rm=TRUE))/2
 
