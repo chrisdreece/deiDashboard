@@ -17,6 +17,32 @@ library(DiagrammeR)
 library(ggplot2)
 library(scales)
 
+dataForecast <- makeForecast(busA,"2021",lengthOut,50,busASupplySlope)
+
+
+
+demandLabelCoordinate<-min(dataForecast$forecast, na.rm=TRUE)+(max(dataForecast$forecast, na.rm=TRUE)-min(dataForecast$forecast, na.rm=TRUE))/2
+supplyLabelCoordinate<-min(dataForecast$forecastSupply, na.rm=TRUE)+(max(dataForecast$forecastSupply, na.rm=TRUE)-min(dataForecast$forecastSupply, na.rm=TRUE))/2
+
+dataForecast %>%
+  ggplot(aes(date, headcount)) +
+  geom_line(aes(x = date, y = headcount),na.rm=TRUE,color="#878787", size=1) +
+  geom_point(aes(x = date, y = headcount),na.rm=TRUE,color="#878787",size=1) +
+  geom_line(aes(x = date, y = forecast),na.rm=TRUE,color="#0868AC", size=1) +
+  geom_line(aes(x = date, y = forecastSupply),na.rm=TRUE,color="#FB8072", size=1) +
+  theme_fivethirtyeight() +
+  ylab("Headcount") +
+  #labs(title="Projected Supply and Demand") +
+  theme(axis.title.y = element_text()) +
+  annotate("text", x = median(dataForecast$date)+265, y = demandLabelCoordinate, label = "Demand", color="#0868AC") +
+  annotate("text", x = median(dataForecast$date)+265, y = supplyLabelCoordinate, label = "Supply", color="#FB8072")
+
+
+min(dataForecast$forecast, na.rm=TRUE)
+
+max(dataForecast$forecast, na.rm=TRUE)
+
+
 hiring<-data.frame(Business=c('Business A','Business B','Business C'),
                    pectFemale=c(.35,.48,.46),
                    pectFemaleHires=c(.45,.38,.55))

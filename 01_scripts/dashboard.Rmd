@@ -101,9 +101,9 @@ busAGrowth<-50
 busBGrowth<-5
 busCGrowth<-10
 
-busAPyramidConst<-15
-busBPyramidConst<-10
-busCPyramidConst<-12
+busALeaderRatio<-15
+busBLeaderRatio<-10
+busCLeaderRatio<-12
 
 busAHireRate<-35
 busBHireRate<-55
@@ -185,16 +185,16 @@ observeEvent(eventExpr = input$resetGrowth, handlerExpr = {
 
 
 
-Pyramid Constraints {data-height=600}
+Leader Ratio {data-height=600}
 -----------------------------------------------------------------------
 
 ### Business A
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
-  inputId = "busAPyramidConstraint",
+  inputId = "busALeaderRatio",
   label   = h4(""),
-  value = busAPyramidConst,
+  value = busALeaderRatio,
   min = -100,
   max = 500,
   icon = icon("percent"))
@@ -204,9 +204,9 @@ numericInputIcon(
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
-  inputId = "busBPyramidConstraint",
+  inputId = "busBLeaderRatio",
   label   = h4(""),
-  value = busBPyramidConst,
+  value = busBLeaderRatio,
   min = -100,
   max = 500,
   icon = icon("percent"))
@@ -216,9 +216,9 @@ numericInputIcon(
 ```{r}
 useShinyjs(rmd = TRUE)
 numericInputIcon(
-  inputId = "busCPyramidConstraint",
+  inputId = "busCLeaderRatio",
   label   = h4(""),
-  value = busCPyramidConst,
+  value = busCLeaderRatio,
   min = -100,
   max = 500,
   icon = icon("percent"))
@@ -230,22 +230,22 @@ actionButton(inputId = "resetPyramid", label = "Reset", color='grey')
 observeEvent(eventExpr = input$resetPyramid, handlerExpr = {
   
   updateNumericInput(
-   inputId = "busAPyramidConstraint",
-   value = busAPyramidConst)
+   inputId = "busALeaderRatio",
+   value = busALeaderRatio)
   
   updateNumericInput(
-   inputId = "busBPyramidConstraint",
-   value = busBPyramidConst)
+   inputId = "busBLeaderRatio",
+   value = busBLeaderRatio)
     
   updateNumericInput(
-   inputId = "busCPyramidConstraint",
-   value = busCPyramidConst)
+   inputId = "busCLeaderRatio",
+   value = busCLeaderRatio)
   
 })
 ```
 
 
-Female Promotion Rate {data-height=600}
+Female Promotions {data-height=600}
 -----------------------------------------------------------------------
 
 ### Business A
@@ -305,7 +305,7 @@ observeEvent(eventExpr = input$resetPromotions, handlerExpr = {
 })
 ```
 
-Female New Hire Rate {data-height=600}
+Female New Hires {data-height=600}
 -----------------------------------------------------------------------
 
 ### Business A
@@ -423,8 +423,8 @@ targetStaff<-.4
 diversity2<-reactive(diversity() %>%
                        mutate(countPect=ifelse(gender=='Female' & period=='forecast' & mgr=='Manager',targetMgr,countPect)) %>%
                        mutate(countPect=ifelse(gender=='Male' & period=='forecast' & mgr=='Manager',1-targetMgr,countPect)) %>%
-                       mutate(countPect=ifelse(gender=='Female' & period=='forecast' & mgr=='Staff',targetStaff,countPect)) %>%
-                       mutate(countPect=ifelse(gender=='Male' & period=='forecast' & mgr=='Staff',1-targetStaff,countPect)) %>%
+                       mutate(countPect=ifelse(gender=='Female' & period=='forecast' & mgr=='Individual Contributor',targetStaff,countPect)) %>%
+                       mutate(countPect=ifelse(gender=='Male' & period=='forecast' & mgr=='Individual Contributor',1-targetStaff,countPect)) %>%
   group_by(mgr,period) %>%
   mutate(label_y = cumsum(countPect) - 0.5 * countPect)
 )
@@ -493,7 +493,7 @@ diversity<-reactive(data.frame
 (
   period=c(rep('prevYear',4),rep('forecast',4)),
   gender=rep(c('Female','Female','Male','Male'),2),
-  mgr=rep(c('Manager','Staff'),4),
+  mgr=rep(c('Manager','Individual Contributor'),4),
   count=c(orgWideFemMgrs,orgWideFemStaff,orgWideMaleMgrs,orgWideMaleStaff,orgWideFemMgrsNew(),orgWideFemStaffNew(),orgWideMaleMgrsNew(),orgWideMaleStaffNew())
 )  %>%
   mutate(gender=as.factor(gender)) %>%
@@ -581,8 +581,8 @@ Column {data-height=200}
 ### Gaps
 ```{r}
 gapA<-reactive(busAForecast()$forecast[busAForecast()$date==max(busAForecast()$date)]-busAForecast()$forecastSupply[busAForecast()$date==max(busAForecast()$date)])
-newMgrsA<-reactive(round(input$busAPyramidConstraint*gapA()/100,0))
-newStaffA<-reactive(gapA()-round(input$busAPyramidConstraint*gapA()/100,0))
+newMgrsA<-reactive(round(input$busALeaderRatio*gapA()/100,0))
+newStaffA<-reactive(gapA()-round(input$busALeaderRatio*gapA()/100,0))
 newFemMgrsA<-reactive(round(input$busAFemPromotions*newMgrsA()/100,0))
 newFemStaffA<-reactive(round(input$busAFemHires*newStaffA()/100,0))
 
@@ -591,11 +591,11 @@ htmlOutput("openingsA")
   output$openingsA <- renderUI({
     HTML(paste("Overall: ", gapA(), "<br/>", 
                "Managers: ", newMgrsA(), "<br/>",
-               "Staff: ", newStaffA(), "<br/>",
+               "Individual Contributor: ", newStaffA(), "<br/>",
                "<br/>",
                "New Female Managers: ","<br/>" ,
                input$busAFemPromotions/100, " X ", newMgrsA(), " = ",  newFemMgrsA(),"<br/>" ,"<br/>",
-               "New Female Staff: ","<br/>" ,
+               "New Female Individual Contributors: ","<br/>" ,
                input$busAFemHires/100, " X ", newStaffA(), " = ",  newFemStaffA(),
                sep=''))
   })
@@ -604,8 +604,8 @@ htmlOutput("openingsA")
 ### Gaps
 ```{r}
 gapB<-reactive(busBForecast()$forecast[busBForecast()$date==max(busBForecast()$date)]-busBForecast()$forecastSupply[busBForecast()$date==max(busBForecast()$date)])
-newMgrsB<-reactive(round(input$busBPyramidConstraint*gapB()/100,0))
-newStaffB<-reactive(gapB()-round(input$busBPyramidConstraint*gapB()/100,0))
+newMgrsB<-reactive(round(input$busBLeaderRatio*gapB()/100,0))
+newStaffB<-reactive(gapB()-round(input$busBLeaderRatio*gapB()/100,0))
 newFemMgrsB<-reactive(round(input$busBFemPromotions*newMgrsB()/100,0))
 newFemStaffB<-reactive(round(input$busBFemHires*newStaffB()/100,0))
 
@@ -614,11 +614,11 @@ htmlOutput("openingsB")
   output$openingsB <- renderUI({
     HTML(paste("Overall: ", gapB(), "<br/>", 
                "Managers: ", newMgrsB(), "<br/>",
-               "Staff: ", gapB()-round(input$busBPyramidConstraint*gapB()/100,0), "<br/>",
+               "Individual Contributor: ", gapB()-round(input$busBLeaderRatio*gapB()/100,0), "<br/>",
                "<br/>",
                "New Female Managers: ","<br/>" ,
                input$busBFemPromotions/100, " X ", newMgrsB(), " = ",  newFemMgrsB(),"<br/>","<br/>",
-               "New Female Staff: ","<br/>" ,
+               "New Female Individual Contributors: ","<br/>" ,
                input$busBFemHires/100, " X ", newStaffB(), " = ",  newFemStaffB(),
                sep=''))
   })
@@ -627,8 +627,8 @@ htmlOutput("openingsB")
 ### Gaps
 ```{r}
 gapC<-reactive(busCForecast()$forecast[busCForecast()$date==max(busCForecast()$date)]-busCForecast()$forecastSupply[busCForecast()$date==max(busCForecast()$date)])
-newMgrsC<-reactive(round(input$busCPyramidConstraint*gapC()/100,0))
-newStaffC<-reactive(gapC()-round(input$busCPyramidConstraint*gapC()/100,0))
+newMgrsC<-reactive(round(input$busCLeaderRatio*gapC()/100,0))
+newStaffC<-reactive(gapC()-round(input$busCLeaderRatio*gapC()/100,0))
 newFemMgrsC<-reactive(round(input$busCFemPromotions*newMgrsC()/100,0))
 newFemStaffC<-reactive(round(input$busCFemHires*newStaffC()/100,0))
 
@@ -637,11 +637,11 @@ htmlOutput("openingsC")
   output$openingsC <- renderUI({
     HTML(paste("Overall: ", gapC(), "<br/>", 
                "Managers: ", newMgrsC(), "<br/>",
-               "Staff: ", gapC()-round(input$busCPyramidConstraint*gapC()/100,0), "<br/>",
+               "Individual Contributor: ", gapC()-round(input$busCLeaderRatio*gapC()/100,0), "<br/>",
                "<br/>",
                "New Female Managers: ","<br/>" ,
                input$busCFemPromotions/100, " X ", newMgrsC(), " = ",  newFemMgrsC(),"<br/>","<br/>",
-               "New Female Staff: ","<br/>" ,
+               "New Female Individual Contributors: ","<br/>" ,
                input$busCFemHires/100, " X ", newStaffC(), " = ",  newFemStaffC(),
                sep=''))
   })

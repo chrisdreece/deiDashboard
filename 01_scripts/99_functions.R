@@ -34,8 +34,13 @@ makeForecast <- function(dataHist,yearForecastStart,length,growthSlope,supplySlo
 
 #busAForecast<-makeForecast(busA,"2021",lengthOut,50,30)
 
+
+
 makePlot <- function(dataForecast) {
 
+  demandLabelCoordinate<-min(dataForecast$forecast, na.rm=TRUE)+(max(dataForecast$forecast, na.rm=TRUE)-min(dataForecast$forecast, na.rm=TRUE))/2
+  supplyLabelCoordinate<-min(dataForecast$forecastSupply, na.rm=TRUE)+(max(dataForecast$forecastSupply, na.rm=TRUE)-min(dataForecast$forecastSupply, na.rm=TRUE))/2
+  
   dataForecast %>%
     ggplot(aes(date, headcount)) +
     geom_line(aes(x = date, y = headcount),na.rm=TRUE,color="#878787", size=1) +
@@ -45,7 +50,9 @@ makePlot <- function(dataForecast) {
     theme_fivethirtyeight() +
     ylab("Headcount") +
     #labs(title="Projected Supply and Demand") +
-    theme(axis.title.y = element_text())
+    theme(axis.title.y = element_text()) +
+    annotate("text", x = median(dataForecast$date)+265, y = demandLabelCoordinate, label = "Demand", color="#0868AC") +
+    annotate("text", x = median(dataForecast$date)+265, y = supplyLabelCoordinate, label = "Supply", color="#FB8072")
 }
 
 #makePlot(busAForecast,"Business A")
@@ -57,7 +64,7 @@ makePlot <- function(dataForecast) {
 diversity<- data.frame(
   period=c(rep('prevYear',4),rep('forecast',4)),
   gender=rep(c('Female','Female','Male','Male'),2),
-  mgr=rep(c('Manager','Staff'),4),
+  mgr=rep(c('Manager','Individual Contributor'),4),
   count=c(91,1097,518,1341,227,874,719,1092)) %>%
   mutate(gender=as.factor(gender)) %>%
   mutate(gender=relevel(gender, "Male")) %>%
