@@ -45,6 +45,33 @@ dataForecast %>%
   annotate("text", x = median(dataForecast$date)+265, y = supplyLabelCoordinate, label = "Supply", color="#FB8072")
 
 
+
+
+dataForecast %>%
+  ggplot(aes(date, headcount)) +
+  labs(
+    title = "<span style='font-size:11pt'><span style='color:#0868AC;'>Demand</span> vs. <span style='color:#FB8072;'>Supply</span> </span>
+    ") +
+  geom_line(aes(x = date, y = headcount),na.rm=TRUE,color="#878787", size=1) +
+  geom_point(aes(x = date, y = headcount),na.rm=TRUE,color="#878787",size=1) +
+  geom_line(aes(x = date, y = forecast),na.rm=TRUE,color="#0868AC", size=1) +
+  geom_line(aes(x = date, y = forecastSupply),na.rm=TRUE,color="#FB8072", size=1) +
+  theme_fivethirtyeight() +
+  ylab("Headcount") +
+  #labs(title="Projected Supply and Demand") +
+  theme(axis.title.y = element_text()) +
+  theme(
+    plot.title = element_markdown(lineheight = 1.1)
+  )
+
+
+
+
+
+
+
+
+
 min(dataForecast$forecast, na.rm=TRUE)
 
 max(dataForecast$forecast, na.rm=TRUE)

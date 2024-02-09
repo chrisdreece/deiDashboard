@@ -38,11 +38,11 @@ makeForecast <- function(dataHist,yearForecastStart,length,growthSlope,supplySlo
 
 makePlot <- function(dataForecast) {
 
-  demandLabelCoordinate<-min(dataForecast$forecast, na.rm=TRUE)+(max(dataForecast$forecast, na.rm=TRUE)-min(dataForecast$forecast, na.rm=TRUE))/2
-  supplyLabelCoordinate<-min(dataForecast$forecastSupply, na.rm=TRUE)+(max(dataForecast$forecastSupply, na.rm=TRUE)-min(dataForecast$forecastSupply, na.rm=TRUE))/2
-  
   dataForecast %>%
     ggplot(aes(date, headcount)) +
+    labs(
+      title = "<span style='font-size:10pt'><span style='color:#0868AC;'>Demand</span> vs. <span style='color:#FB8072;'>Supply</span> </span>
+    ") +
     geom_line(aes(x = date, y = headcount),na.rm=TRUE,color="#878787", size=1) +
     geom_point(aes(x = date, y = headcount),na.rm=TRUE,color="#878787",size=1) +
     geom_line(aes(x = date, y = forecast),na.rm=TRUE,color="#0868AC", size=1) +
@@ -51,8 +51,9 @@ makePlot <- function(dataForecast) {
     ylab("Headcount") +
     #labs(title="Projected Supply and Demand") +
     theme(axis.title.y = element_text()) +
-    annotate("text", x = median(dataForecast$date)+265, y = demandLabelCoordinate, label = "Demand", color="#0868AC") +
-    annotate("text", x = median(dataForecast$date)+265, y = supplyLabelCoordinate, label = "Supply", color="#FB8072")
+    theme(
+      plot.title = element_markdown(lineheight = 1.1)
+    )
 }
 
 #makePlot(busAForecast,"Business A")
